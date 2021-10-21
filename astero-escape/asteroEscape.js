@@ -59,8 +59,8 @@ function createPlayer() {
   player.style.top = `${t}px`;
   player.style.left = "100px";
 
-  player.style.height = "10px";
-  player.style.width = "10px";
+  player.style.height = "20px";
+  player.style.width = "20px";
   container.appendChild(player);
 }
 
