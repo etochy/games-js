@@ -1,8 +1,10 @@
+const PLAYERSPEED = 2;
+const LOCAL_STORAGE = "astero-score";
+
 var width = 0;
 var height = 0;
 
 var speed = 3;
-const PLAYERSPEED = 2;
 
 var speedObstacles = 1;
 
@@ -19,6 +21,8 @@ var score = 0;
 var container;
 var player;
 
+var pseudo = "";
+
 function main() {
   initGame();
 }
@@ -27,6 +31,8 @@ function main() {
  * Init Game
  */
 function initGame() {
+  pseudo = prompt("Please enter your pseudo", "Jhon Doe");
+
   container = document.getElementById("gameContainer");
   onResize();
   window.onresize = function () {
@@ -104,7 +110,7 @@ function initControls() {
 function movePlayer() {
   if (isUp) {
     let p = parseInt(getPx(player.style.top)) - PLAYERSPEED;
-    player.style.top = `${p >= 0 && p <= height ? p : height-5}px`;
+    player.style.top = `${p >= 0 && p <= height ? p : height - 5}px`;
   }
   if (isDown) {
     let p = parseInt(getPx(player.style.top)) + PLAYERSPEED;
@@ -206,8 +212,41 @@ function getPx(value) {
  */
 function endGame() {
   container.removeChild(player);
+  saveScore();
   alert("You Lost");
+  displayScores();
   window.location.reload(true);
+}
+
+function displayScores() {
+  // TODO GET scores
+  let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE)) || [];
+  scores.sort((a, b) => {
+    if (a.score > b.score) {
+      return -1;
+    } else if (a.score < b.score) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+  let scText = "Top Scores : ";
+  scores.forEach(element => {
+    scText += "\n";
+    scText += element.pseudo + " : " + element.score;
+  });
+  alert(scText);
+}
+
+function saveScore() {
+  // TODO POST score
+  let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE)) || [];
+  scores.push({
+    pseudo: pseudo,
+    score: score,
+  });
+
+  localStorage.setItem(LOCAL_STORAGE, JSON.stringify(scores));
 }
 
 /**
