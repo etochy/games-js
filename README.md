@@ -1,4 +1,4 @@
-# webRunnerGl
+# gamesjs
 
 A simple game in Javascript
 
