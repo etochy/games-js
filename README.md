@@ -1,6 +1,6 @@
 # webRunnerGl
 
-A simple runner game using WebGL
+A simple game in Javascript
 
 ## Install
 
