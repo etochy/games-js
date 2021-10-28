@@ -1,5 +1,8 @@
+// const axios = require('axios').default;
+
 const PLAYERSPEED = 2;
 const LOCAL_STORAGE = "astero-score";
+const URL = "http://localhost:5000/asteroid-scores";
 
 var width = 0;
 var height = 0;
@@ -21,6 +24,8 @@ var score = 0;
 var container;
 var player;
 
+var start = false;
+
 var pseudo = "";
 
 function main() {
@@ -39,6 +44,8 @@ function initGame() {
     onResize();
   };
   createPlayer();
+
+  start = true;
 
   intervalObstacles = setInterval(handleAdvance, speedObstacles);
   intervalPlayer = setInterval(movePlayer, 1);
@@ -130,23 +137,25 @@ function movePlayer() {
  * Generate new obstacle
  */
 function generateObstacle() {
-  let obs = document.createElement("div");
-  obs.className = "obstacle";
-  let l = width;
-  obs.style.left = `${l}px`;
+  if (start) {
+    let obs = document.createElement("div");
+    obs.className = "obstacle";
+    let l = width;
+    obs.style.left = `${l}px`;
 
-  let t = Math.random() * height;
-  let h = Math.random() * (100 - 20) + 20;
-  let w = Math.random() * (100 - 20) + 20;
+    let t = Math.random() * height;
+    let h = Math.random() * (100 - 20) + 20;
+    let w = Math.random() * (100 - 20) + 20;
 
-  obs.style.top = `${t}px`;
-  obs.style.height = `${h}px`;
-  obs.style.width = `${w}px`;
+    obs.style.top = `${t}px`;
+    obs.style.height = `${h}px`;
+    obs.style.width = `${w}px`;
 
-  container.appendChild(obs);
+    container.appendChild(obs);
 
-  let x = Math.random() * (200 - 50) + 50;
-  setTimeout(generateObstacle, x);
+    let x = Math.random() * (200 - 50) + 50;
+    setTimeout(generateObstacle, x);
+  }
 }
 
 /**
@@ -211,15 +220,44 @@ function getPx(value) {
  * End Gme and reload window
  */
 function endGame() {
+  start = false;
+  clearInterval(intervalObstacles);
+  clearInterval(intervalPlayer);
   container.removeChild(player);
-  saveScore();
   alert("You Lost");
-  displayScores();
-  window.location.reload(true);
+  saveScore();
+  // displayScores();
 }
 
 function displayScores() {
-  // TODO GET scores
+  // GET scores
+  // axios
+  //   .get(URL)
+  //   .then(function (response) {
+  //     // handle success
+  //     let scores = response.data;
+  //     scores.sort((a, b) => {
+  //       if (a.score > b.score) {
+  //         return -1;
+  //       } else if (a.score < b.score) {
+  //         return 1;
+  //       } else {
+  //         return 0;
+  //       }
+  //     });
+  //     let scText = "Top Scores : ";
+  //     scores.forEach((element) => {
+  //       scText += "\n";
+  //       scText += element.pseudo + " : " + element.score;
+  //     });
+  //     alert(scText);
+  //     window.location.reload(true);
+  //   })
+  //   .catch(function (error) {
+  //     // handle error
+  //     console.log("RESPONSE", error);
+  //   });
+
   let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE)) || [];
   scores.sort((a, b) => {
     if (a.score > b.score) {
@@ -231,15 +269,16 @@ function displayScores() {
     }
   });
   let scText = "Top Scores : ";
-  scores.forEach(element => {
+  scores.forEach((element) => {
     scText += "\n";
     scText += element.pseudo + " : " + element.score;
   });
   alert(scText);
+  window.location.reload(true);
 }
 
 function saveScore() {
-  // TODO POST score
+  // POST score
   let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE)) || [];
   scores.push({
     pseudo: pseudo,
@@ -247,6 +286,38 @@ function saveScore() {
   });
 
   localStorage.setItem(LOCAL_STORAGE, JSON.stringify(scores));
+  displayScores();
+
+  // axios
+  //   .post(URL, {
+  //     pseudo: pseudo,
+  //     score: score,
+  //   })
+  //   .then(function (response) {
+  //     console.log("RESPONSE", response);
+  //     // handle success
+  //     let scores = response.data;
+  //     scores.sort((a, b) => {
+  //       if (a.score > b.score) {
+  //         return -1;
+  //       } else if (a.score < b.score) {
+  //         return 1;
+  //       } else {
+  //         return 0;
+  //       }
+  //     });
+  //     let scText = "Top Scores : ";
+  //     scores.forEach((element) => {
+  //       scText += "\n";
+  //       scText += element.pseudo + " : " + element.score;
+  //     });
+  //     alert(scText);
+  //     window.location.reload(true);
+  //   })
+  //   .catch(function (error) {
+  //     // handle error
+  //     console.log("RESPONSE", error);
+  //   });
 }
 
 /**

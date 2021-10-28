@@ -19,5 +19,8 @@
   "homepage": "https://github.com/etochy/webRunnerGl#readme",
   "devDependencies": {
     "http-server": "^13.0.2"
+  },
+  "dependencies": {
+    "axios": "^0.23.0"
   }
 }
