@@ -230,33 +230,6 @@ function endGame() {
 }
 
 function displayScores() {
-  // GET scores
-  // axios
-  //   .get(URL)
-  //   .then(function (response) {
-  //     // handle success
-  //     let scores = response.data;
-  //     scores.sort((a, b) => {
-  //       if (a.score > b.score) {
-  //         return -1;
-  //       } else if (a.score < b.score) {
-  //         return 1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //     let scText = "Top Scores : ";
-  //     scores.forEach((element) => {
-  //       scText += "\n";
-  //       scText += element.pseudo + " : " + element.score;
-  //     });
-  //     alert(scText);
-  //     window.location.reload(true);
-  //   })
-  //   .catch(function (error) {
-  //     // handle error
-  //     console.log("RESPONSE", error);
-  //   });
 
   let scores = JSON.parse(localStorage.getItem(LOCAL_STORAGE)) || [];
   scores.sort((a, b) => {
@@ -288,36 +261,6 @@ function saveScore() {
   localStorage.setItem(LOCAL_STORAGE, JSON.stringify(scores));
   displayScores();
 
-  // axios
-  //   .post(URL, {
-  //     pseudo: pseudo,
-  //     score: score,
-  //   })
-  //   .then(function (response) {
-  //     console.log("RESPONSE", response);
-  //     // handle success
-  //     let scores = response.data;
-  //     scores.sort((a, b) => {
-  //       if (a.score > b.score) {
-  //         return -1;
-  //       } else if (a.score < b.score) {
-  //         return 1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //     let scText = "Top Scores : ";
-  //     scores.forEach((element) => {
-  //       scText += "\n";
-  //       scText += element.pseudo + " : " + element.score;
-  //     });
-  //     alert(scText);
-  //     window.location.reload(true);
-  //   })
-  //   .catch(function (error) {
-  //     // handle error
-  //     console.log("RESPONSE", error);
-  //   });
 }
 
 /**
