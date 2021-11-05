@@ -18,6 +18,8 @@ var canvasHeight;
 var maxHeight;
 var maxWidth;
 
+var score = 0;
+
 var listObstacles = [];
 
 function main() {
@@ -27,7 +29,7 @@ function main() {
     onResize();
   };
 
-  myPlayer = new player(30, 30, "blue", 10, 120);
+  myPlayer = new player(30, 30, "blue", this.canvasWidth / 2, this.canvasHeight / 2);
 
   initControls();
 
@@ -50,6 +52,9 @@ function generateCanvas() {
 
 function startGame() {
   intervalObstacle = setInterval(generateObstacle, 200);
+  let intervalScore = setInterval(() => {
+    score++;
+  }, 500);
 }
 
 function generateObstacle() {
@@ -68,6 +73,10 @@ function updateGameArea() {
     listObstacles[index].update();
   }
   myPlayer.update();
+
+  context.font = "30px Arial";
+  context.fillStyle = "black";
+  context.fillText("Score : " + score, 10, 50);
 }
 
 function clear() {
@@ -85,9 +94,6 @@ function player(width, height, color, x, y) {
   this.isDown = false;
   this.isLeft = false;
   this.isRight = false;
-
-  // this.image = new Image();
-  // this.image.src = "./assets/plane.jpg";
 
   this.update = function () {
     if (this.isUp) {
@@ -109,14 +115,13 @@ function player(width, height, color, x, y) {
           : canvasWidth - width;
     }
 
-    if (!this.isDown && !this.isUp && this.y + 1 < canvasHeight - this.height) {
-      this.y += 1;
-    }
+    // if (!this.isDown && !this.isUp && this.y + 1 < canvasHeight - this.height) {
+    //   this.y += 1;
+    // }
 
     ctx = context;
     ctx.fillStyle = color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
-    // ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
   };
 }
 
@@ -137,8 +142,6 @@ function obstacle(width, height, color, x, y) {
     this.height += OBSTACLE_SPEED;
     this.width += OBSTACLE_SPEED;
 
-    console.log(maxHeight);
-
     if (this.height > maxHeight - 10) {
       ctx.fillStyle = "red";
     } else ctx.fillStyle = color;
@@ -158,8 +161,10 @@ function obstacle(width, height, color, x, y) {
 }
 
 function endGame() {
-  alert("Echec");
-  // console.log("echec");
+  clearInterval(intervalDraw);
+  clearInterval(intervalObstacle);
+  alert("Echec, Score : " + score);
+  window.location.reload(true);
 }
 
 function checkCollision(obs) {
