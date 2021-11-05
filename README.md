@@ -15,3 +15,7 @@ This project use html-server package to serve the app in local environment
 ```shell
   npm start
 ```
+
+## Pages
+
+https://etochy.github.io/games-js/
