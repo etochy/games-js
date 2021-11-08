@@ -49,14 +49,31 @@ function main() {
     this.canvasHeight - 100
   );
 
-  lstTuiles.push(new tuile(100, 100, "yellow", this.canvasWidth / 2 - 50, 200));
+  loadTuiles();
 
   initControls();
 
   generateCanvas();
 }
 
-function loadTuiles() {}
+function loadTuiles() {
+  fetch("levels/level1.json")
+    .then((response) => response.json())
+    .then((json) => {
+      json.forEach(element => {
+      
+        lstTuiles.push(
+          new tuile(
+            this.canvasWidth / 20,
+            this.canvasHeight / 2 / 10,
+            "yellow",
+            (this.canvasWidth / 20) * element.position[0],
+            (this.canvasHeight / 2 / 10) * element.position[1],
+          )
+        );
+      });
+    });
+}
 
 function generateCanvas() {
   canvas = document.createElement("canvas");
