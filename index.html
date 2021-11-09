@@ -1,9 +1,11 @@
 <html>
     <head>
         <script
-            type="module"
-            src="./index.js"
+            type="text/javascript"
+            src="./scripts.js"
         ></script>
+
+
         <link rel="stylesheet" href="index.css">
     </head>
     <body>
@@ -12,5 +14,12 @@
         <a href="./astero-escape/asteroEscape.html">Astero Escape</a>
         <a href="./bombeEscape/bombeEscape.html">Bombe Escape</a>
         <a href="./brique-game/index.html">Casse brique</a>
+        <input
+            type="file"
+            id="inputId"
+            name="niveau"
+            >
+            <!-- onchange="loadFile(this)" -->
+        <button type="button" id="submit-file" onclick="getInputValue()" >Submit File</button>
     </body>
 </html>
