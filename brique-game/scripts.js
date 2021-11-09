@@ -7,7 +7,7 @@ var context;
 var myPlayer;
 var myBall;
 
-var PLAYER_SPEED = 6;
+var PLAYER_SPEED = 10;
 var OBSTACLE_SPEED = 1;
 var BALL_SPEED = 5;
 
