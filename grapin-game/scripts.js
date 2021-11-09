@@ -26,6 +26,9 @@ var lstTuiles = [];
 
 var isStarted = false;
 
+var level = 1;
+var MAX_LEVEL = 2;
+
 function main() {
   container = document.getElementById("gameContainer");
   onResize();
@@ -33,6 +36,7 @@ function main() {
     onResize();
   };
 
+  isStarted = false;
   myPlayer = new player(
     100,
     20,
@@ -49,26 +53,26 @@ function main() {
     this.canvasHeight - 100
   );
 
-  loadTuiles();
+  startNewGame();
 
   initControls();
 
   generateCanvas();
 }
 
-function loadTuiles() {
-  fetch("levels/level1.json")
+function loadTuiles(level) {
+  fetch("levels/level" + level + ".json")
     .then((response) => response.json())
     .then((json) => {
-      json.forEach(element => {
-      
+      lstTuiles = [];
+      json.forEach((element) => {
         lstTuiles.push(
           new tuile(
-            this.canvasWidth / 20,
-            this.canvasHeight / 2 / 10,
-            "yellow",
-            (this.canvasWidth / 20) * element.position[0],
-            (this.canvasHeight / 2 / 10) * element.position[1],
+            this.canvasWidth / 15,
+            this.canvasHeight / 2 / 7,
+            element.level,
+            (this.canvasWidth / 15) * element.position[0],
+            (this.canvasHeight / 2 / 7) * element.position[1]
           )
         );
       });
@@ -91,8 +95,6 @@ function startGame() {
   isStarted = true;
 
   let x = 0;
-
-  console.log();
   x =
     (myPlayer.x + myPlayer.width / 2 - canvasWidth / 2) / (myPlayer.width / 2);
 
@@ -110,14 +112,17 @@ function updateGameArea() {
   myPlayer.update();
 
   myBall.update();
-  // context.font = "30px Arial";
-  // context.fillStyle = "black";
-  // context.fillText("Score : " + score, 10, 50);
+  context.font = "20px Arial";
+  context.fillStyle = "black";
+  context.fillText("Level : " + level, 10, 50);
 }
 
 function clear() {
   context.clearRect(0, 0, canvas.width, canvas.height);
-  lstTuiles = lstTuiles.filter((o) => o.toDestroy === false);
+  lstTuiles = lstTuiles.filter((o) => o.level > 0);
+  if (lstTuiles.length === 0 && isStarted) {
+    winGame();
+  }
 }
 
 /**
@@ -137,10 +142,34 @@ function onResize() {
 }
 
 function endGame() {
-  clearInterval(intervalDraw);
-  clearInterval(intervalObstacle);
-  alert("Echec, Score : " + score);
-  // window.location.reload(true);
+  alert("Wasted, back to level 1");
+  level = 1;
+  startNewGame();
+}
+
+function winGame() {
+  alert("Congratulations !!!");
+
+  level += 1;
+  if (level > MAX_LEVEL) {
+    alert("No more levels available, you beat the game !!!!");
+  } else {
+    startNewGame();
+  }
+}
+
+function startNewGame() {
+  isStarted = false;
+
+  myPlayer.x = this.canvasWidth / 2 - 50;
+  myPlayer.y = this.canvasHeight - 80;
+
+  myBall.x = this.canvasWidth / 2 - 5;
+  myBall.y = this.canvasHeight - 100;
+
+  myBall.vector = [0, 0];
+
+  loadTuiles(level);
 }
 
 function checkCollision(obj1, obj2) {
@@ -198,7 +227,7 @@ function player(width, height, color, x, y) {
           : canvasWidth - width;
     }
 
-    bounceBall(this);
+    bounceBall(this, true);
 
     ctx = context;
     ctx.fillStyle = color;
@@ -206,20 +235,36 @@ function player(width, height, color, x, y) {
   };
 }
 
-function bounceBall(object) {
+function bounceBall(object, isPlayer = false) {
   if (checkCollision(object, myBall)) {
+    // Top and Bottom
     if (
       (myBall.y > object.y || myBall.y < object.y + object.height) &&
       myBall.x > object.x &&
       myBall.x < object.x + object.width
-    )
+    ) {
+      if (isPlayer) {
+        let x = 0;
+        x =
+          (myBall.x + myBall.width / 2 - object.x) /
+          (object.x + object.width - object.x);
+        x = x * 2 - 1;
+
+        myBall.vector[0] = myBall.vector[0] + x;
+
+        if (myBall.vector[0] < -1) myBall.vector[0] = -1;
+        if (myBall.vector[0] > 1) myBall.vector[0] = 1;
+      }
       myBall.vector[1] = -myBall.vector[1];
+    }
+    // Sides
     else if (
       (myBall.x > object.x || myBall.x < object.x + object.width) &&
       myBall.y > object.y &&
       myBall.y < object.y + object.height
-    )
+    ) {
       myBall.vector[0] = -myBall.vector[0];
+    }
   }
 }
 
@@ -258,21 +303,38 @@ function ball(width, height, color, x, y) {
   };
 }
 
-function tuile(width, height, color, x, y) {
+function tuile(width, height, level, x, y) {
   this.width = width;
   this.height = height;
   this.x = x;
   this.y = y;
-
-  this.toDestroy = false;
+  this.level = level;
 
   this.update = function () {
     ctx = context;
+    let color;
+    switch (this.level) {
+      case 3:
+        color = "black";
+        break;
+      case 2:
+        color = "red";
+        break;
+      case 1:
+        color = "yellow";
+        break;
+      default:
+        color = "yellow";
+        break;
+    }
     ctx.fillStyle = color;
-    if (checkCollision(this, myBall) && !this.toDestroy) {
-      this.toDestroy = true;
+    if (checkCollision(this, myBall)) {
+
+      this.level--;
+      
       bounceBall(this);
-    } else {
+    }
+    if (level > 0) {
       ctx.fillRect(this.x, this.y, this.width, this.height);
     }
   };
