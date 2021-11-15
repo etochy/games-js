@@ -26,7 +26,7 @@ var lstTuiles = [];
 
 var isStarted = false;
 
-var level = 7;
+var level = 1;
 var MAX_LEVEL = 6;
 
 function main() {
@@ -174,7 +174,7 @@ function winGame() {
   if (level > MAX_LEVEL) {
     alert("No more levels available, Let's random things");
   }
-  
+
   startNewGame();
 }
 
