@@ -26,8 +26,8 @@ var lstTuiles = [];
 
 var isStarted = false;
 
-var level = 1;
-var MAX_LEVEL = 2;
+var level = 7;
+var MAX_LEVEL = 6;
 
 function main() {
   container = document.getElementById("gameContainer");
@@ -53,30 +53,51 @@ function main() {
     this.canvasHeight - 100
   );
 
+  
   startNewGame();
-
+  
   initControls();
-
+  
   generateCanvas();
 }
 
 function loadTuiles(level) {
-  fetch("levels/level" + level + ".json")
-    .then((response) => response.json())
-    .then((json) => {
-      lstTuiles = [];
-      json.forEach((element) => {
-        lstTuiles.push(
-          new tuile(
-            this.canvasWidth / 15,
-            this.canvasHeight / 2 / 7,
-            element.level,
-            (this.canvasWidth / 15) * element.position[0],
-            (this.canvasHeight / 2 / 7) * element.position[1]
-          )
-        );
+  if (level <= MAX_LEVEL) {
+    fetch("levels/level" + level + ".json")
+      .then((response) => response.json())
+      .then((json) => {
+        lstTuiles = [];
+        json.forEach((element) => {
+          lstTuiles.push(
+            new tuile(
+              this.canvasWidth / 15,
+              this.canvasHeight / 2 / 7,
+              element.level,
+              (this.canvasWidth / 15) * element.position[1],
+              (this.canvasHeight / 2 / 7) * element.position[0]
+            )
+          );
+        });
       });
-    });
+  } else {
+    lstTuiles = [];
+    for (let i = 0; i < 15; i++) {
+      for (let j = 0; j < 8; j++) {
+        let r = Math.floor(Math.random() * 2);
+        if (r > 0) {
+          lstTuiles.push(
+            new tuile(
+              canvasWidth / 15,
+              canvasHeight / 2 / 7,
+              Math.floor(Math.random() * 3) + 1,
+              (canvasWidth / 15) * i,
+              (canvasHeight / 2 / 7) * j
+            )
+          );
+        }
+      }
+    }
+  }
 }
 
 function generateCanvas() {
@@ -102,6 +123,7 @@ function startGame() {
   if (x < -1) x = -1;
   if (x > 1) x = 1;
   myBall.vector = [x, -1];
+
 }
 
 function updateGameArea() {
@@ -160,6 +182,9 @@ function winGame() {
 
 function startNewGame() {
   isStarted = false;
+
+  myPlayer.isLeft = false;
+  myPlayer.isRight = false;
 
   myPlayer.x = this.canvasWidth / 2 - 50;
   myPlayer.y = this.canvasHeight - 80;
@@ -329,9 +354,8 @@ function tuile(width, height, level, x, y) {
     }
     ctx.fillStyle = color;
     if (checkCollision(this, myBall)) {
-
       this.level--;
-      
+
       bounceBall(this);
     }
     if (level > 0) {
