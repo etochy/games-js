@@ -53,11 +53,10 @@ function main() {
     this.canvasHeight - 100
   );
 
-  
   startNewGame();
-  
+
   initControls();
-  
+
   generateCanvas();
 }
 
@@ -123,7 +122,6 @@ function startGame() {
   if (x < -1) x = -1;
   if (x > 1) x = 1;
   myBall.vector = [x, -1];
-
 }
 
 function updateGameArea() {
@@ -174,10 +172,10 @@ function winGame() {
 
   level += 1;
   if (level > MAX_LEVEL) {
-    alert("No more levels available, you beat the game !!!!");
-  } else {
-    startNewGame();
+    alert("No more levels available, Let's random things");
   }
+  
+  startNewGame();
 }
 
 function startNewGame() {
