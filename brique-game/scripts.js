@@ -8,7 +8,6 @@ var myPlayer;
 var myBall;
 
 var PLAYER_SPEED = 10;
-var OBSTACLE_SPEED = 1;
 var BALL_SPEED = 5;
 
 var intervalDraw;
@@ -26,7 +25,7 @@ var lstTuiles = [];
 
 var isStarted = false;
 
-var level = 1;
+var level = 7;
 var MAX_LEVEL = 6;
 
 function main() {
@@ -197,12 +196,18 @@ function startNewGame() {
 
 function checkCollision(obj1, obj2) {
   // I hate simple javascript
-  return !(
+  let res = !(
     parseInt(obj1.y) + parseInt(obj1.height) < parseInt(obj2.y) ||
     parseInt(obj2.y) + parseInt(obj2.height) < parseInt(obj1.y) ||
     parseInt(obj1.x) + parseInt(obj1.width) < parseInt(obj2.x) ||
     parseInt(obj2.x) + parseInt(obj2.width) < parseInt(obj1.x)
   );
+
+  if (res) {
+    // clearInterval(intervalDraw);
+  }
+
+  return res;
 }
 
 /**
@@ -260,11 +265,26 @@ function player(width, height, color, x, y) {
 
 function bounceBall(object, isPlayer = false) {
   if (checkCollision(object, myBall)) {
-    // Top and Bottom
+    let left = object.x - myBall.x;
+    let top = object.y - myBall.y;
+
+    let right = myBall.x + myBall.width - (object.x + object.width);
+    let bottom = myBall.y + myBall.height - (object.y + object.height);
+
+
+
+    // Sides
     if (
-      (myBall.y > object.y || myBall.y < object.y + object.height) &&
-      myBall.x > object.x &&
-      myBall.x < object.x + object.width
+      (Math.abs(left) < Math.abs(top) && Math.abs(left) < Math.abs(bottom)) ||
+      (Math.abs(right) < Math.abs(top) && Math.abs(right) < Math.abs(bottom))
+    ) {
+      myBall.vector[0] = -myBall.vector[0];
+    }
+
+    // Top and Bottom
+    else if (
+      (Math.abs(top) < Math.abs(left) && Math.abs(top) < Math.abs(right)) ||
+      (Math.abs(bottom) < Math.abs(left) && Math.abs(bottom) < Math.abs(right))
     ) {
       if (isPlayer) {
         let x = 0;
@@ -278,17 +298,41 @@ function bounceBall(object, isPlayer = false) {
         if (myBall.vector[0] < -1) myBall.vector[0] = -1;
         if (myBall.vector[0] > 1) myBall.vector[0] = 1;
       }
+      
       myBall.vector[1] = -myBall.vector[1];
     }
-    // Sides
-    else if (
-      (myBall.x > object.x || myBall.x < object.x + object.width) &&
-      myBall.y > object.y &&
-      myBall.y < object.y + object.height
-    ) {
-      myBall.vector[0] = -myBall.vector[0];
-    }
   }
+
+  //   // Sides
+  //   if (
+  //     (myBall.x > object.x || myBall.x < object.x + object.width) &&
+  //     myBall.y > object.y &&
+  //     myBall.y < object.y + object.height
+  //   ) {
+  //     myBall.vector[0] = -myBall.vector[0];
+  //   }
+
+  //   // Top and Bottom
+  //   if (
+  //     (myBall.y > object.y || myBall.y < object.y + object.height) &&
+  //     myBall.x > object.x &&
+  //     myBall.x < object.x + object.width
+  //   ) {
+  //     if (isPlayer) {
+  //       let x = 0;
+  //       x =
+  //         (myBall.x + myBall.width / 2 - object.x) /
+  //         (object.x + object.width - object.x);
+  //       x = x * 2 - 1;
+
+  //       myBall.vector[0] = myBall.vector[0] + x;
+
+  //       if (myBall.vector[0] < -1) myBall.vector[0] = -1;
+  //       if (myBall.vector[0] > 1) myBall.vector[0] = 1;
+  //     }
+  //     myBall.vector[1] = -myBall.vector[1];
+  //   }
+  // }
 }
 
 function ball(width, height, color, x, y) {
@@ -296,7 +340,6 @@ function ball(width, height, color, x, y) {
   this.height = height;
   this.x = x;
   this.y = y;
-
   this.vector = [0, 0];
 
   this.update = function () {
@@ -352,7 +395,7 @@ function tuile(width, height, level, x, y) {
     }
     ctx.fillStyle = color;
     if (checkCollision(this, myBall)) {
-      this.level--;
+      // this.level--;
 
       bounceBall(this);
     }
